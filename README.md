@@ -23,3 +23,11 @@ require_once("../../activecampaign-api-php/includes/ActiveCampaign.class.php");
 </pre>
 
 Refresh the page and you should see
+
+## Documentation and Links
+
+* [ActiveCampaign webhook documentation](http://www.activecampaign.com/api/webhooks.php)
+
+## Reporting Issues
+
+We'd love to help if you have questions or problems. Report issues using the [Github Issue Tracker](issues) or email help@activecampaign.com.
