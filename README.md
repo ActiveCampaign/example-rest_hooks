@@ -1,5 +1,7 @@
 ActiveCampaign Custom API Script: Interact with ActiveCampaign webhooks via our REST API.
 
+This script is intended to get you going with our API by providing an interface to manage your webhooks. You are free to customize the script to your liking.
+
 ## Requirements
 
 1. [Our PHP API library](https://github.com/ActiveCampaign/activecampaign-api-php)
