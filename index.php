@@ -1,5 +1,7 @@
 <?php
 
+	session_start();
+
 	$api_url = "https://mthommes6.api-us1.com";
 	$api_key = "31478fa6ed91f39e63539d9cb7de24b873f8f9af86aee2f95f4d93f8123cdeb24a1d61d5";
 
@@ -50,43 +52,6 @@
 	$success = $alert = "";
 	$step = ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET["step"]) && (int)$_GET["step"]) ? (int)$_GET["step"] : 1;
 
-	// load stuff on page load to use in the HTML part
-	if ($step == 1) {
-
-		// get lists (for the drop-down)
-		$lists = $ac->api("list/list?ids=all&full=0");
-
-		$lists = get_object_vars($lists);
-		$lists_ = array();
-
-		foreach ($lists as $k => $list) {
-			if (is_int($k)) {
-				// avoid "result_code", "result_message", etc items
-				$lists_[] = $list;
-			}
-		}
-
-		$lists = $lists_;
-
-	}
-	elseif ($step == 101) {
-
-		$webhooks = $ac->api("webhook/list");
-
-		$webhooks = get_object_vars($webhooks);
-		$webhooks_ = array();
-
-		foreach ($webhooks as $k => $webhook) {
-			if (is_int($k)) {
-				// avoid "result_code", "result_message", etc items
-				$webhooks_[] = $webhook;
-			}
-		}
-
-		$webhooks = $webhooks_;
-
-	}
-
 	// form submitted
 	if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -120,10 +85,88 @@
 				$success = $webhook->result_message;
 			}
 
+			// so it re-fetches them
+			unset($_SESSION["webhooks"]);
+
 		}
 		elseif ($step == 101) {
 
+			// editing a webhook
+			if (isset($_POST["webhook_edit"])) {
 
+				$edit = (int)$_POST["webhook_edit"];
+
+			}
+
+			// deletes
+			if (isset($_POST["webhook_deletes"])) {
+
+				$deletes = $_POST["deletes"];
+				$delete_results = array();
+
+				foreach ($deletes as $webhook_id) {
+
+					$delete = $ac->api("webhook/delete?id={$webhook_id}");
+
+					if (!(int)$delete->success) {
+						$delete_results[$webhook_id] = $delete->error;
+					}
+					else {
+						$delete_results[$webhook_id] = $delete->message;
+					}
+
+					sleep(5);
+
+				}
+
+			}
+
+		}
+
+		//if (!$alert) $step++;
+
+	}
+
+	// load stuff on page load to use in the HTML part
+	if ($step == 1) {
+
+		if (!isset($_SESSION["lists"]) || !$_SESSION["lists"]) {
+
+			// get lists (for the drop-down)
+			$lists = $ac->api("list/list?ids=all&full=0");
+
+			$lists = get_object_vars($lists);
+			$lists_ = array();
+
+			foreach ($lists as $k => $list) {
+				if (is_int($k)) {
+					// avoid "result_code", "result_message", etc items
+					$lists_[] = $list;
+				}
+			}
+
+			$_SESSION["lists"] = $lists_;
+
+		}
+
+	}
+	elseif ($step == 101) {
+
+		if (!isset($_SESSION["webhooks"]) || !$_SESSION["webhooks"]) {
+
+			$webhooks = $ac->api("webhook/list");
+
+			$webhooks = get_object_vars($webhooks);
+			$webhooks_ = array();
+
+			foreach ($webhooks as $k => $webhook) {
+				if (is_int($k)) {
+					// avoid "result_code", "result_message", etc items
+					$webhooks_[] = $webhook;
+				}
+			}
+
+			$_SESSION["webhooks"] = $webhooks_;
 
 		}
 
@@ -149,11 +192,11 @@
 
 	<?php
 
-		if ($step == 1) {
+		if ($step == 1 || (isset($edit) && $edit)) {
 
 			?>
 
-			<h1>Add Webhook</h1>
+			<h1><?php echo (isset($edit) && $edit) ? "Edit" : "Add"; ?> Webhook</h1>
 
 			<h2>Webhook Name</h2>
 			<input type="text" name="webhook_name" size="30" />
@@ -165,7 +208,7 @@
 			<select name="webhook_list">
 				<?php
 
-					foreach ($lists as $list) {
+					foreach ($_SESSION["lists"] as $list) {
 						?>
 
 						<option value="<?php echo $list->id; ?>"><?php echo $list->name; ?></option>
@@ -253,11 +296,47 @@
 			<?php
 
 		}
-		elseif ($step == 101) {
+
+		if ($step == 101) {
 
 			?>
 
 			<h1>View/Edit/Delete Webhooks</h1>
+
+			<?php
+
+				if (isset($edit)) {
+
+					?>
+
+					<h2 style="margin-top: 30px;">Edit Webhook (ID: <?php echo $edit; ?>)</h2>
+
+					<?php
+
+
+
+				}
+
+				if (isset($delete_results) && $delete_results) {
+
+					?>
+
+					<h2 style="margin-top: 30px;">Delete Results</h2>
+
+					<?php
+
+					foreach ($delete_results as $webhook_id => $api_result) {
+
+						?>
+
+						<p><b>Webhook ID <?php echo $webhook_id; ?>:</b> <?php echo $api_result; ?></p>
+
+						<?php
+					}
+
+				}
+
+			?>
 
 			<table border="1" cellspacing="0" cellpadding="3">
 
@@ -287,7 +366,7 @@
 
 				<?php
 
-					foreach ($webhooks as $webhook) {
+					foreach ($_SESSION["webhooks"] as $webhook) {
 
 						?>
 
@@ -311,8 +390,8 @@
 							<td><?php echo ((int)$webhook->init_admin) ? "<span class='on'>on</span>" : "<span class='off'>off</span>"; ?></td>
 							<td><?php echo ((int)$webhook->init_api) ? "<span class='on'>on</span>" : "<span class='off'>off</span>"; ?></td>
 							<td><?php echo ((int)$webhook->init_system) ? "<span class='on'>on</span>" : "<span class='off'>off</span>"; ?></td>
-							<td><input type="radio" name="edit[]" value="<?php echo $webhook->id; ?>" /></td>
-							<td><input type="checkbox" name="cancels[]" value="<?php echo $webhook->id; ?>" /></td>
+							<td><input type="radio" name="webhook_edit" value="<?php echo $webhook->id; ?>" /></td>
+							<td><input type="checkbox" name="webhook_deletes[]" value="<?php echo $webhook->id; ?>" /></td>
 						</tr>
 
 						<?php
