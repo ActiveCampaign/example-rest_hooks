@@ -24,7 +24,9 @@ require_once("../../activecampaign-api-php/includes/ActiveCampaign.class.php");
 
 Refresh the page and you should see options to "Add Webhook," "View/Edit/Delete Webhooks," and "View Webhook Event Types":
 
-![Webhook script options](http://d226aj4ao1t61q.cloudfront.net/8zirqg5sm_screenshot2013-03-06at11.44.28am.jpg)
+![Webhook manage options](http://d226aj4ao1t61q.cloudfront.net/8zirqg5sm_screenshot2013-03-06at11.44.28am.jpg)
+
+![View/Edit/Delete Webhooks](http://d226aj4ao1t61q.cloudfront.net/e8cbcqj0h_screenshot2013-03-06at12.36.22pm.jpg)
 
 ## Documentation and Links
 
