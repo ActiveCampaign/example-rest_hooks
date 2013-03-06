@@ -74,6 +74,12 @@
 
 			<h1>Add Webhook</h1>
 			
+			<h2>Webhook Name</h2>
+			<input type="text" name="webhook_name" size="30" />
+
+			<h2>Webhook URL</h2>			
+			<input type="text" name="webhook_name" size="30" />				
+			
 			<?php		
 		
 		}
