@@ -2,8 +2,8 @@
 
 	session_start();
 
-	$api_url = "https://mthommes6.api-us1.com";
-	$api_key = "31478fa6ed91f39e63539d9cb7de24b873f8f9af86aee2f95f4d93f8123cdeb24a1d61d5";
+	$api_url = "";
+	$api_key = "";
 
 	define("ACTIVECAMPAIGN_URL", $api_url);
 	define("ACTIVECAMPAIGN_API_KEY", $api_key);
@@ -95,6 +95,7 @@
 			if (isset($_POST["webhook_edit"])) {
 
 				$edit = (int)$_POST["webhook_edit"];
+				$webhook_view = $ac->api("webhook/view?id={$edit}");
 
 			}
 
@@ -199,10 +200,10 @@
 			<h1><?php echo (isset($edit) && $edit) ? "Edit" : "Add"; ?> Webhook</h1>
 
 			<h2>Webhook Name</h2>
-			<input type="text" name="webhook_name" size="30" />
+			<input type="text" name="webhook_name" size="30" value="<?php if (isset($webhook_view)) echo $webhook_view->name; ?>" />
 
 			<h2 style="margin-top: 30px;">Webhook URL</h2>
-			<input type="text" name="webhook_url" size="60" />
+			<input type="text" name="webhook_url" size="60" value="<?php if (isset($webhook_view)) echo $webhook_view->url; ?>" />
 
 			<h2 style="margin-top: 30px;">List</h2>
 			<select name="webhook_list">
@@ -211,7 +212,7 @@
 					foreach ($_SESSION["lists"] as $list) {
 						?>
 
-						<option value="<?php echo $list->id; ?>"><?php echo $list->name; ?></option>
+						<option value="<?php echo $list->id; ?>"<?php if (isset($webhook_view) && $webhook_view->listid == $list->id) echo " selected='selected'"; ?>><?php echo $list->name; ?></option>
 
 						<?php
 					}
@@ -222,74 +223,74 @@
 			<h2 style="margin-top: 30px;">Event/Type</h2>
 
 			<p>
-				<input type="checkbox" name="webhook_action[subscribe]" id="action_subscribe" value="subscribe" />
+				<input type="checkbox" name="webhook_action[subscribe]" id="action_subscribe" value="subscribe" <?php if (isset($webhook_view) && (int)$webhook_view->subscribe) echo " checked='checked'"; ?> />
 				<label for="action_subscribe">New Subscription</label>
 			</p>
 
 			<p>
-				<input type="checkbox" name="webhook_action[unsubscribe]" id="action_unsubscribe" value="unsubscribe" />
+				<input type="checkbox" name="webhook_action[unsubscribe]" id="action_unsubscribe" value="unsubscribe" <?php if (isset($webhook_view) && (int)$webhook_view->unsubscribe) echo " checked='checked'"; ?> />
 				<label for="action_unsubscribe">New Unsubscription</label>
 			</p>
 
 			<p>
-				<input type="checkbox" name="webhook_action[update]" id="action_update" value="update" />
+				<input type="checkbox" name="webhook_action[update]" id="action_update" value="update" <?php if (isset($webhook_view) && (int)$webhook_view->update) echo " checked='checked'"; ?> />
 				<label for="action_update">Subscriber Updated</label>
 			</p>
 
 			<p>
-				<input type="checkbox" name="webhook_action[sent]" id="action_sent" value="sent" />
+				<input type="checkbox" name="webhook_action[sent]" id="action_sent" value="sent" <?php if (isset($webhook_view) && (int)$webhook_view->sent) echo " checked='checked'"; ?> />
 				<label for="action_sent">Campaign Starts Sending</label>
 			</p>
 
 			<p>
-				<input type="checkbox" name="webhook_action[open]" id="action_open" value="open" />
+				<input type="checkbox" name="webhook_action[open]" id="action_open" value="open" <?php if (isset($webhook_view) && (int)$webhook_view->open) echo " checked='checked'"; ?> />
 				<label for="action_open">Campaign Opened</label>
 			</p>
 
 			<p>
-				<input type="checkbox" name="webhook_action[click]" id="action_click" value="click" />
+				<input type="checkbox" name="webhook_action[click]" id="action_click" value="click" <?php if (isset($webhook_view) && (int)$webhook_view->click) echo " checked='checked'"; ?> />
 				<label for="action_click">Link Clicked</label>
 			</p>
 
 			<p>
-				<input type="checkbox" name="webhook_action[forward]" id="action_forward" value="forward" />
+				<input type="checkbox" name="webhook_action[forward]" id="action_forward" value="forward" <?php if (isset($webhook_view) && (int)$webhook_view->forward) echo " checked='checked'"; ?> />
 				<label for="action_forward">Campaign Forwarded</label>
 			</p>
 
 			<p>
-				<input type="checkbox" name="webhook_action[share]" id="action_share" value="share" />
+				<input type="checkbox" name="webhook_action[share]" id="action_share" value="share" <?php if (isset($webhook_view) && (int)$webhook_view->share) echo " checked='checked'"; ?> />
 				<label for="action_share">Campaign Shared</label>
 			</p>
 
 			<p>
-				<input type="checkbox" name="webhook_action[bounce]" id="action_bounce" value="bounce" />
+				<input type="checkbox" name="webhook_action[bounce]" id="action_bounce" value="bounce" <?php if (isset($webhook_view) && (int)$webhook_view->bounce) echo " checked='checked'"; ?> />
 				<label for="action_bounce">Email Bounce</label>
 			</p>
 
 			<p>
-				<input type="checkbox" name="webhook_action[reply]" id="action_reply" value="reply" />
+				<input type="checkbox" name="webhook_action[reply]" id="action_reply" value="reply" <?php if (isset($webhook_view) && (int)$webhook_view->reply) echo " checked='checked'"; ?> />
 				<label for="action_reply">Email Reply</label>
 			</p>
 
 			<h2 style="margin-top: 30px;">Initialize From</h2>
 
 			<p>
-				<input type="checkbox" name="webhook_init[public]" id="init_public" value="public" />
+				<input type="checkbox" name="webhook_init[public]" id="init_public" value="public" <?php if (isset($webhook_view) && (int)$webhook_view->init_public) echo " checked='checked'"; ?> />
 				<label for="init_public">By a subscriber</label>
 			</p>
 
 			<p>
-				<input type="checkbox" name="webhook_init[admin]" id="init_admin" value="admin" />
+				<input type="checkbox" name="webhook_init[admin]" id="init_admin" value="admin" <?php if (isset($webhook_view) && (int)$webhook_view->init_admin) echo " checked='checked'"; ?> />
 				<label for="init_admin">By an admin user</label>
 			</p>
 
 			<p>
-				<input type="checkbox" name="webhook_init[api]" id="init_api" value="api" />
+				<input type="checkbox" name="webhook_init[api]" id="init_api" value="api" <?php if (isset($webhook_view) && (int)$webhook_view->init_api) echo " checked='checked'"; ?> />
 				<label for="init_api">By the API</label>
 			</p>
 
 			<p>
-				<input type="checkbox" name="webhook_init[system]" id="init_system" value="system" />
+				<input type="checkbox" name="webhook_init[system]" id="init_system" value="system" <?php if (isset($webhook_view) && (int)$webhook_view->init_system) echo " checked='checked'"; ?> />
 				<label for="init_system">By system processes</label>
 			</p>
 
@@ -306,14 +307,6 @@
 			<?php
 
 				if (isset($edit)) {
-
-					?>
-
-					<h2 style="margin-top: 30px;">Edit Webhook (ID: <?php echo $edit; ?>)</h2>
-
-					<?php
-
-
 
 				}
 
