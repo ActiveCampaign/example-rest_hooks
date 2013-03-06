@@ -22,7 +22,9 @@ Also make sure the path to the PHP library is correct:
 require_once("../../activecampaign-api-php/includes/ActiveCampaign.class.php");
 </pre>
 
-Refresh the page and you should see
+Refresh the page and you should see options to Add Webhook, View/Edit/Delete Webhooks, and View Webhook Event Types:
+
+![Webhook script options](http://d226aj4ao1t61q.cloudfront.net/8zirqg5sm_screenshot2013-03-06at11.44.28am.jpg)
 
 ## Documentation and Links
 
