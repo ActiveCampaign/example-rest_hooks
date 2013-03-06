@@ -49,6 +49,73 @@
 		if (!$continue) exit();
 	}
 
+	function do_deletes($post) {
+
+		$delete_results = array();
+
+		if (isset($post["webhook_deletes"])) {
+
+			$deletes = $post["deletes"];
+
+			foreach ($deletes as $webhook_id) {
+
+				$delete = $ac->api("webhook/delete?id={$webhook_id}");
+
+				if (!(int)$delete->success) {
+					$delete_results[$webhook_id] = $delete->error;
+				}
+				else {
+					$delete_results[$webhook_id] = $delete->message;
+				}
+
+				sleep(5);
+
+			}
+
+			// so it re-fetches them
+			unset($_SESSION["webhooks"]);
+
+		}
+
+		return $delete_results;
+
+	}
+
+	function do_add_edit($action, $post) {
+
+		$webhook_name = $post["webhook_name"];
+		$webhook_url = $post["webhook_url"];
+		$webhook_list = (int)$post["webhook_list"];
+		$webhook_actions = (array)$post["webhook_action"];
+		$webhook_inits = (array)$post["webhook_init"];
+
+		// add/edit webhook
+
+		$webhook = get_object_vars(json_decode('{
+		  "name": "' . $webhook_name . '",
+		  "url": "' . $webhook_url . '",
+		  "lists[' . $webhook_list . ']": "' . $webhook_list . '"
+		}'));
+
+		$webhook["action"] = $webhook_actions;
+		$webhook["init"] = $webhook_inits;
+
+		if ($action == "edit") $webhook["id"] = $post["webhook_id"];
+
+		$webhook = $ac->api("webhook/{$action}", $webhook);
+
+		if (!(int)$webhook->success) {
+			$alert = $webhook->error;
+		}
+		else {
+			$success = $webhook->result_message;
+		}
+
+		// so it re-fetches them
+		unset($_SESSION["webhooks"]);
+
+	}
+
 	$success = $alert = "";
 	$step = ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET["step"]) && (int)$_GET["step"]) ? (int)$_GET["step"] : 1;
 
@@ -59,34 +126,8 @@
 
 		if ($form_step == 1) {
 
-			$webhook_name = $_POST["webhook_name"];
-			$webhook_url = $_POST["webhook_url"];
-			$webhook_list = (int)$_POST["webhook_list"];
-			$webhook_actions = (array)$_POST["webhook_action"];
-			$webhook_inits = (array)$_POST["webhook_init"];
-
 			// add webhook
-
-			$webhook = get_object_vars(json_decode('{
-			  "name": "' . $webhook_name . '",
-			  "url": "' . $webhook_url . '",
-			  "lists[' . $webhook_list . ']": "' . $webhook_list . '"
-			}'));
-
-			$webhook["action"] = $webhook_actions;
-			$webhook["init"] = $webhook_inits;
-
-			$webhook = $ac->api("webhook/add", $webhook);
-
-			if (!(int)$webhook->success) {
-				$alert = $webhook->error;
-			}
-			else {
-				$success = $webhook->result_message;
-			}
-
-			// so it re-fetches them
-			unset($_SESSION["webhooks"]);
+			$edit = do_add_edit("add", $_POST);
 
 		}
 		elseif ($step == 101) {
@@ -97,34 +138,21 @@
 				$edit = (int)$_POST["webhook_edit"];
 				$webhook_view = $ac->api("webhook/view?id={$edit}");
 
+				$step = 102;
+
 			}
 
 			// deletes
-			if (isset($_POST["webhook_deletes"])) {
-
-				$deletes = $_POST["deletes"];
-				$delete_results = array();
-
-				foreach ($deletes as $webhook_id) {
-
-					$delete = $ac->api("webhook/delete?id={$webhook_id}");
-
-					if (!(int)$delete->success) {
-						$delete_results[$webhook_id] = $delete->error;
-					}
-					else {
-						$delete_results[$webhook_id] = $delete->message;
-					}
-
-					sleep(5);
-
-				}
-
-			}
+			$delete_results = do_deletes($_POST);
 
 		}
+		elseif ($step == 102) {
 
-		//if (!$alert) $step++;
+			// do edits and deletes (if any)
+			$edit = do_add_edit("edit", $_POST);
+			$delete_results = do_deletes($_POST);
+
+		}
 
 	}
 
@@ -198,6 +226,8 @@
 			?>
 
 			<h1><?php echo (isset($edit) && $edit) ? "Edit" : "Add"; ?> Webhook</h1>
+
+			<input type="hidden" name="webhook_id" value="<?php if (isset($webhook_view)) echo $webhook_view->id; ?>" />
 
 			<h2>Webhook Name</h2>
 			<input type="text" name="webhook_name" size="30" value="<?php if (isset($webhook_view)) echo $webhook_view->name; ?>" />
