@@ -200,6 +200,23 @@
 		}
 
 	}
+	elseif ($step == 201) {
+
+		$webhook_events = $ac->api("webhook/events");
+
+		$webhook_events = get_object_vars($webhook_events);
+		$webhook_events_ = array();
+
+		foreach ($webhook_events as $k => $webhook_event) {
+			if ($k != "result_code" && $k != "result_message" && $k != "result_output" && $k != "success") {
+				// avoid "result_code", "result_message", etc items
+				$webhook_events_[] = $webhook_event;
+			}
+		}
+
+		$webhook_events = $webhook_events_;
+
+	}
 
 ?>
 
@@ -426,6 +443,42 @@
 			</table>
 
 			<?php
+
+		}
+
+		if ($step == 201) {
+
+			foreach ($webhook_events as $event) {
+
+				?>
+
+				<h3><?php echo $event->description; ?></h3>
+
+				<p>Short name: <?php echo $event->db_field; ?></p>
+
+				<h4>Fields</h4>
+
+				<ul>
+
+					<?php
+
+						foreach ($event->fields as $field => $sub_fields) {
+
+							?>
+
+							<li><?php echo $field; ?></li>
+
+							<?php
+
+						}
+
+					?>
+
+				</ul>
+
+				<?php
+
+			}
 
 		}
 
