@@ -448,13 +448,15 @@
 
 		if ($step == 201) {
 
+			$counter = 1;
+
 			foreach ($webhook_events as $event) {
 
 				?>
 
-				<h3><?php echo $event->description; ?></h3>
+				<h3 style="<?php if ($counter > 1) echo "margin-top: 30px;"; ?>"><?php echo $event->description; ?></h3>
 
-				<p>Short name: <?php echo $event->db_field; ?></p>
+				<p>Short name: <code><?php echo $event->db_field; ?></code></p>
 
 				<h4>Fields</h4>
 
@@ -466,7 +468,40 @@
 
 							?>
 
-							<li><?php echo $field; ?></li>
+							<li><?php echo $field; ?><?php if (is_array($sub_fields)) echo ": [" . implode(", ", $sub_fields) . "]"; ?></li>
+
+							<?php
+
+						}
+
+					?>
+
+				</ul>
+
+				<h4>Example Response (field: value)</h4>
+
+				<ul>
+
+					<?php
+
+						foreach ($event->example_response as $field => $value) {
+
+							?>
+
+							<li>
+								<?php echo $field . ": "; ?>
+								<?php
+
+									if (is_object($value)) {
+										$value = get_object_vars($value);
+
+									}
+									else {
+										echo $value;
+									}
+
+								?>
+							</li>
 
 							<?php
 
@@ -477,6 +512,8 @@
 				</ul>
 
 				<?php
+
+				$counter++;
 
 			}
 
