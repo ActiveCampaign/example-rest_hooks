@@ -55,17 +55,17 @@
 
 		if (isset($post["webhook_deletes"])) {
 
-			$deletes = $post["deletes"];
+			$deletes = $post["webhook_deletes"];
 
 			foreach ($deletes as $webhook_id) {
 
-				$delete = $ac->api("webhook/delete?id={$webhook_id}");
+				$delete = $GLOBALS["ac"]->api("webhook/delete?id={$webhook_id}");
 
 				if (!(int)$delete->success) {
 					$delete_results[$webhook_id] = $delete->error;
 				}
 				else {
-					$delete_results[$webhook_id] = $delete->message;
+					$delete_results[$webhook_id] = $delete->result_message;
 				}
 
 				sleep(5);
@@ -102,7 +102,7 @@
 
 		if ($action == "edit") $webhook["id"] = $post["webhook_id"];
 
-		$webhook = $ac->api("webhook/{$action}", $webhook);
+		$webhook = $GLOBALS["ac"]->api("webhook/{$action}", $webhook);
 
 		if (!(int)$webhook->success) {
 			$alert = $webhook->error;
@@ -179,7 +179,7 @@
 		}
 
 	}
-	elseif ($step == 101) {
+	elseif ($step == 101 || $step == 102) {
 
 		if (!isset($_SESSION["webhooks"]) || !$_SESSION["webhooks"]) {
 
@@ -328,7 +328,7 @@
 
 		}
 
-		if ($step == 101) {
+		if ($step == 101 || $step == 102) {
 
 			?>
 
