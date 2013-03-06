@@ -466,9 +466,15 @@
 
 						foreach ($event->fields as $field => $sub_fields) {
 
+							$sub_fields_display = "";
+							if (is_array($sub_fields)) {
+								$sub_fields_display = ": ";
+								$sub_fields_display .= print_r($sub_fields,1);
+							}
+
 							?>
 
-							<li><?php echo $field; ?><?php if (is_array($sub_fields)) echo ": [" . implode(", ", $sub_fields) . "]"; ?></li>
+							<li><?php echo $field; ?><?php echo $sub_fields_display; ?></li>
 
 							<?php
 
@@ -494,7 +500,7 @@
 
 									if (is_object($value)) {
 										$value = get_object_vars($value);
-
+										print_r($value);
 									}
 									else {
 										echo $value;
