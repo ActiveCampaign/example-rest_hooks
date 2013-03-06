@@ -44,6 +44,9 @@
 		elseif ($form_step == 3) {
 		
 		}
+		elseif ($step == 101) {
+		
+		}
 	
 	}
 
@@ -52,9 +55,29 @@
 <div style="color: red; font-weight: bold; margin: 20px 0;<?php if (!$alert) echo " display: none;"; ?>"><?php echo $alert; ?></div>
 
 <form method="get">
-	Process:
+	Action:
 	<select name="step" onchange="this.form.submit();">
 		<option value="1"<?php if ($step >= 1 && $step <= 100) echo " selected=\"selected\""; ?>>Add Webhook</option>
 		<option value="101"<?php if ($step >= 101 && $step <= 200) echo " selected=\"selected\""; ?>>View/Edit/Delete Webhooks</option>
 	</select>
+</form>
+
+<form method="POST">
+
+	<input type="hidden" name="step" value="<?php echo $step; ?>" />
+	
+	<?php
+	
+		if ($step == 1) {
+		
+			?>
+
+			<h1>Add Webhook</h1>
+			
+			<?php		
+		
+		}
+	
+	?>
+
 </form>
