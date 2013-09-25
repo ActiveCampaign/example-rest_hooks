@@ -2,8 +2,8 @@
 
 	session_start();
 
-	$api_url = "";
-	$api_key = "";
+	$api_url = "http://localhost/hosted";
+	$api_key = "7e69bf619223d1953f66ddfd6166044e18859e588c38326085b2e7d6e42b8100e51cae51";
 
 	define("ACTIVECAMPAIGN_URL", $api_url);
 	define("ACTIVECAMPAIGN_API_KEY", $api_key);
@@ -254,6 +254,7 @@
 
 			<h2 style="margin-top: 30px;">List</h2>
 			<select name="webhook_list">
+				<option value="0">No List</option>
 				<?php
 
 					foreach ($_SESSION["lists"] as $list) {
