@@ -271,6 +271,11 @@
 			<h2 style="margin-top: 30px;">Event/Type</h2>
 
 			<p>
+				<input type="checkbox" name="webhook_action[list_add]" id="action_list_add" value="list_add" <?php if (isset($webhook_view) && (int)$webhook_view->list_add) echo " checked='checked'"; ?> />
+				<label for="action_list_add">New List</label>
+			</p>
+
+			<p>
 				<input type="checkbox" name="webhook_action[subscribe]" id="action_subscribe" value="subscribe" <?php if (isset($webhook_view) && (int)$webhook_view->subscribe) echo " checked='checked'"; ?> />
 				<label for="action_subscribe">New Subscription</label>
 			</p>
@@ -387,6 +392,7 @@
 					<th>Create Date</th>
 					<th>List ID</th>
 					<th>URL</th>
+					<th>Type: New List</th>
 					<th>Type: New Subscription</th>
 					<th>Type: New Unsubscription</th>
 					<th>Type: Subscriber Updated</th>
@@ -417,6 +423,7 @@
 							<td><?php echo date("m/d/Y", strtotime($webhook->cdate)); ?></td>
 							<td><?php echo $webhook->listid; ?></td>
 							<td><a href="<?php echo $webhook->url; ?>">Link</a></td>
+							<td><?php echo ((int)$webhook->list_add) ? "<span class='on'>on</span>" : "<span class='off'>off</span>"; ?></td>
 							<td><?php echo ((int)$webhook->subscribe) ? "<span class='on'>on</span>" : "<span class='off'>off</span>"; ?></td>
 							<td><?php echo ((int)$webhook->unsubscribe) ? "<span class='on'>on</span>" : "<span class='off'>off</span>"; ?></td>
 							<td><?php echo ((int)$webhook->update) ? "<span class='on'>on</span>" : "<span class='off'>off</span>"; ?></td>
