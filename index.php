@@ -2,8 +2,8 @@
 
 	session_start();
 
-	$api_url = "http://localhost/hosted";
-	$api_key = "7e69bf619223d1953f66ddfd6166044e18859e588c38326085b2e7d6e42b8100e51cae51";
+	$api_url = "";
+	$api_key = "";
 
 	define("ACTIVECAMPAIGN_URL", $api_url);
 	define("ACTIVECAMPAIGN_API_KEY", $api_key);
